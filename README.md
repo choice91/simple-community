@@ -1,4 +1,6 @@
 # simple-community
+
+## 와이어프레임
 ### 게시판 메인화면   
 <img src="https://user-images.githubusercontent.com/48742487/125255502-783dfe80-e336-11eb-968f-ca1ed685f61d.png" width="70%" />
 
