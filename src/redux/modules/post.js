@@ -1,12 +1,17 @@
 import { firestore } from "../../firebase";
+import firebase from "firebase/app";
 
 const post_db = firestore.collection("post");
+const post_id_db = firestore.collection("post_num").doc("post_num");
+
+const increment = firebase.firestore.FieldValue.increment(1);
 
 // Actions
 const ADD = "post/ADD";
 const LOAD = "post/LOAD";
 const DELETE = "post/DELETE";
 const UPDATE = "post/UPDATE";
+const INCREASE = "post/INCREASE";
 
 // initialState
 const initialState = {
@@ -37,6 +42,10 @@ const updatePost = (post) => {
   return { type: UPDATE, post };
 };
 
+const increase = (num) => {
+  return { type: INCREASE, num };
+};
+
 const loadPostFB = () => {
   return function (dispatch, getState) {
     post_db
@@ -51,7 +60,7 @@ const loadPostFB = () => {
             post_data = [...post_data, { id: doc.id, ...doc.data() }];
           }
         });
-        // console.log(post_data);
+        // console.log("post_data: ", post_data);
         dispatch(loadPost(post_data));
       });
   };
@@ -66,13 +75,15 @@ const addPostFB = (post) => {
       post_data = { ...post_data };
       // dispatch(addPost(post_data));
     });
+
+    post_id_db.update({ max_num: increment });
   };
 };
 
 const deletePostFB = (post_id) => {
   return function (dispatch, getState) {
     const post_data = getState().post.list;
-    console.log("post_data: ", post_data);
+    // console.log("post_data: ", post_data);
 
     const _post_data = post_data.filter((p, idx) => {
       // console.log("pid: ", p.post_id, "post_id: ", post_id);
@@ -131,6 +142,7 @@ const updatePostFB = (post) => {
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case LOAD: {
+      // console.log("action: ", action);
       if (action.post.length > 0) {
         return { list: action.post };
       }
@@ -146,7 +158,7 @@ export default function reducer(state = initialState, action) {
           return list;
         }
       });
-      return { list: post_list };
+      return { list: post_list, max_num: state.max_num };
     }
     case UPDATE: {
       // console.log("action: ", action.post);
@@ -179,7 +191,10 @@ export default function reducer(state = initialState, action) {
         return list;
       });
       // console.log(post_list);
-      return { list: post_list };
+      return { list: post_list, max_num: state.max_num };
+    }
+    case INCREASE: {
+      return { ...state, max_num: action.num };
     }
     default:
       return state;
@@ -191,6 +206,7 @@ const actionCreators = {
   loadPost,
   deletePost,
   updatePost,
+  increase,
   loadPostFB,
   addPostFB,
   deletePostFB,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { TextField, Button } from "@material-ui/core";
@@ -12,12 +12,16 @@ function PostWrite(props) {
   const dispatch = useDispatch();
 
   const post_list = useSelector((state) => state.post.list);
-  const post_num = post_list[0].post_id + 1;
+  // const post_num = post_list.length > 0 ? post_list[0].post_id + 1 : 1;
+
+  const post_num = useSelector((state) => state.postNum.max_num);
+  // console.log(post_num);
+
   // console.log(post_list[0].post_id);
 
-  const [title, setTitle] = React.useState("");
-  const [author, setAuthor] = React.useState("");
-  const [contents, setContents] = React.useState("");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [contents, setContents] = useState("");
 
   const changeTitle = (e) => {
     setTitle(e.target.value);
@@ -74,7 +78,7 @@ function PostWrite(props) {
                 contents: contents,
               })
             );
-            history.push("/");
+            history.replace("/");
           }}
         >
           글쓰기

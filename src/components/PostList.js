@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 
 import { actionCreators as postActions } from "../redux/modules/post";
+import { actionCreators as postNumActions } from "../redux/modules/postNum";
 
 import Header from "./Header";
 
@@ -34,10 +35,14 @@ function PostList(props) {
   const { history } = props;
   const post = useSelector((state) => state.post.list);
   // console.log(post_num);
-  console.log("post: ", post);
+  // console.log("post: ", post);
+
+  const num = useSelector((state) => state.postNum.max_num);
+  // console.log("max_num: ", num);
 
   React.useEffect(() => {
     dispatch(postActions.loadPostFB());
+    dispatch(postNumActions.increaseFB());
   }, []);
 
   return (
